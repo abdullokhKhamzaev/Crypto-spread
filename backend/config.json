@@ -1,0 +1,70 @@
+{
+  "mode": "test",
+  "exchanges": {
+    "binance": {
+      "apiKey": "YOUR_BINANCE_API_KEY",
+      "apiSecret": "YOUR_BINANCE_API_SECRET",
+      "testnet": false,
+      "spot": {
+        "enabled": true,
+        "makerFee": 0.001,
+        "takerFee": 0.001
+      },
+      "futures": {
+        "enabled": true,
+        "makerFee": 0.0002,
+        "takerFee": 0.0004
+      }
+    },
+    "mexc": {
+      "apiKey": "YOUR_MEXC_API_KEY",
+      "apiSecret": "YOUR_MEXC_API_SECRET",
+      "spot": {
+        "enabled": true,
+        "makerFee": 0.0,
+        "takerFee": 0.001
+      },
+      "futures": {
+        "enabled": true,
+        "makerFee": 0.0,
+        "takerFee": 0.0006
+      }
+    },
+    "bitget": {
+      "apiKey": "YOUR_BITGET_API_KEY",
+      "apiSecret": "YOUR_BITGET_API_SECRET",
+      "passphrase": "YOUR_BITGET_PASSPHRASE",
+      "spot": {
+        "enabled": true,
+        "makerFee": 0.001,
+        "takerFee": 0.001
+      },
+      "futures": {
+        "enabled": true,
+        "makerFee": 0.0002,
+        "takerFee": 0.0006
+      }
+    }
+  },
+  "trading": {
+    "minSpreadPercent": 0.0,
+    "minProfitAfterFees": 0.0,
+    "maxPositionSize": 500,
+    "maxOpenPositions": 3,
+    "orderTimeout": 5000,
+    "parallelExecutionWindow": 2000
+  },
+  "risk": {
+    "maxSlippage": 0.1,
+    "maxFundingRate": 0.01,
+    "stopLossPercent": 2.0,
+    "dailyMaxLoss": 50
+  },
+  "notification": {
+    "telegram": {
+      "enabled": false,
+      "botToken": "YOUR_TELEGRAM_BOT_TOKEN",
+      "chatId": "YOUR_TELEGRAM_CHAT_ID"
+    }
+  }
+}
