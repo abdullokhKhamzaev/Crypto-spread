@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "axios": "^1.12.2",
+    "ccxt": "^4.5.11",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "node-telegram-bot-api": "^0.66.0",
     "vue": "^3.5.22"
   },
   "devDependencies": {

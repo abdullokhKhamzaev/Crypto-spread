@@ -22,3 +22,21 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ============================================================================
+# SENSITIVE DATA - NEVER COMMIT!
+# ============================================================================
+
+# Environment variables (API keys, secrets)
+.env
+.env.local
+.env.production
+
+# Trading data
+data/
+history.json
+positions.json
+trading-errors.log
+
+# Server logs
+server.log

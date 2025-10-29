@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 
 // Reactive data
@@ -8,11 +8,11 @@ const filteredOpportunities = ref([])
 const loading = ref(true)
 const executing = ref(false)
 const lastUpdate = ref('-')
-const selectedExchanges = ref(['Binance', 'MEXC', 'Bitget'])
-const availableExchanges = ref(['Binance', 'MEXC', 'Bitget', 'KuCoin', 'Gate.io', 'Kraken'])
+const selectedExchanges = ref(['MEXC', 'Bitget'])
+const availableExchanges = ref(['MEXC', 'Bitget'])
 const filters = ref({
-  minSpread: 0,
-  maxSpread: 20, // Increased for high-spread hedged arbitrage opportunities
+  minSpread: -1,  // Allow negative spreads to see full market
+  maxSpread: 20,  // Increased for high-spread hedged arbitrage opportunities
   minVolume: 0,
   investmentAmount: 1000 // Default $1000 investment
 })
@@ -77,6 +77,12 @@ const fetchData = async () => {
 const applyFilters = () => {
   let filtered = [...opportunities.value]
 
+  // Filter by selected exchanges (both spot and futures must be in selected list)
+  filtered = filtered.filter(o => 
+    selectedExchanges.value.includes(o.network1) && 
+    selectedExchanges.value.includes(o.network2)
+  )
+
   // Calculate profit for each opportunity
   filtered = filtered.map(o => ({
     ...o,
@@ -84,15 +90,23 @@ const applyFilters = () => {
     profitWithFees: ((filters.value.investmentAmount * parseFloat(o.spread) / 100) - (filters.value.investmentAmount * 0.001)).toFixed(2) // 0.1% total fees
   }))
 
-  // ONLY show profitable opportunities (positive net profit after fees)
-  filtered = filtered.filter(o => parseFloat(o.profitWithFees) > 0)
+  // Apply spread range filter (INCLUDING negative spreads)
+  filtered = filtered.filter(o => {
+    const spread = parseFloat(o.spread)
+    return spread >= filters.value.minSpread && spread <= filters.value.maxSpread
+  })
   
-  // Sort by profit descending (best first)
-  filtered.sort((a, b) => parseFloat(b.profitWithFees) - parseFloat(a.profitWithFees))
+  // Apply volume filter
+  if (filters.value.minVolume > 0) {
+    filtered = filtered.filter(o => parseFloat(o.volume) >= filters.value.minVolume)
+  }
+  
+  // Sort by net spread descending (best first, even if negative)
+  filtered.sort((a, b) => parseFloat(b.spread) - parseFloat(a.spread))
 
   filteredOpportunities.value = filtered
   
-  console.log('Foydali imkoniyatlar:', filtered.length)
+  console.log(`Filtered: ${filtered.length} opportunities (${filtered.filter(o => parseFloat(o.profitWithFees) > 0).length} profitable)`)
 }
 
 const formatVolume = (volume) => {
@@ -148,6 +162,11 @@ const executeHedgedArbitrage = async (opp) => {
 
 // Legacy function for compatibility
 const executeOrder = executeHedgedArbitrage
+
+// Watch for exchange changes and auto-apply filters
+watch(selectedExchanges, () => {
+  applyFilters()
+}, { deep: true })
 
 // Lifecycle
 onMounted(() => {
